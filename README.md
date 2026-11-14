@@ -1,8 +1,10 @@
-# Listing Maps
+# <img src="icons/listing-maps-icon-128.png" alt="" width="40" align="top"> Listing Maps
 
 A Chrome extension that shows a small Google Map beside every listing when you search on
 **realestate.com.au** or **domain.com.au**, so you can see where each property is while you
 scroll through the results.
+
+![A realestate.com.au listing with a Google Map beside it, pinned on the property's address](images/hero_image.jpeg)
 
 ## Install
 
@@ -10,13 +12,14 @@ The extension isn't on the Chrome Web Store, so you load it into Chrome yourself
 about a minute.
 
 1. **Download it.** On this page, click **Code → Download ZIP** and unzip it. Or, if you use git:
+
    ```bash
-   git clone https://github.com/<owner>/listing-maps.git
+   git clone https://github.com/MattVaughan-Jones/real-estate-listing-maps.git
    ```
+
 2. **Open Chrome's extensions page.** Go to `chrome://extensions` in the address bar.
 3. **Turn on Developer mode** with the switch in the top-right corner.
-4. **Click Load unpacked** and choose the folder you downloaded (the one containing
-   `manifest.json`).
+4. **Click Load unpacked** and choose the folder you downloaded.
 5. **Pin it (optional).** Click the puzzle-piece icon in Chrome's toolbar and pin
    **Listing Maps**, so its settings are one click away.
 
@@ -26,13 +29,11 @@ Search for properties on [realestate.com.au](https://www.realestate.com.au) or
 [domain.com.au](https://www.domain.com.au). A map appears to the right of each listing, with
 a pin on the property's address.
 
-- Maps appear on search results for buying, renting and sold properties.
-- On domain.com.au, maps appear in **list view** only. Map view already has its own map.
-- Maps don't appear on individual property pages or anywhere else on either site.
-
 ### Settings
 
 Click the **Listing Maps** icon in Chrome's toolbar to choose how the maps are framed:
+
+<img src="images/settings_menu.png" alt="The Listing Maps settings popup" width="352">
 
 - **Centre on each pin** (the default): each map is centred on its property. Set how far it's
   zoomed in (1 shows the whole world, 21 shows individual buildings; the default is 15).
@@ -51,7 +52,8 @@ Download the latest version (or run `git pull`), then click the reload icon on
 
 ### If maps stop appearing
 
-The extension reads each site's pages, so a redesign of either site can break it. Check the
+The extension reads each site's pages, so a redesign of either site can break it.
+Try updating the extension (instructions above) and if that doesn't work, check the
 [issues](../../issues) to see if it's already reported, or open a new one saying which site
 and page.
 
@@ -59,15 +61,14 @@ and page.
 
 ## Contributing
 
-Contributions are welcome, especially support for more property sites and fixes when a
-site changes its pages.
+Contributions are welcome.
 
 ### How it works
 
 There's no build step: Chrome loads the files in this folder as they are.
 
 | File | What it does |
-|---|---|
+| --- | --- |
 | `manifest.json` | Tells Chrome which sites to run on and which files to load. |
 | `listing-site-adapters.js` | Everything specific to each site: which pages are search results, where the listings are, and how to read an address. |
 | `add-listing-maps.js` | Adds a map beside each listing and keeps it in step as the page changes. |
@@ -101,7 +102,6 @@ also run automatically on every pull request.
 
 - Keep changes small and focused. The goal is a simple tool that does one thing well.
 - If you fix a bug, add a test that fails without your fix.
-- Use descriptive names: code should be easy to understand when reviewing it.
 
 ## Disclaimer
 
