@@ -1,0 +1,12 @@
+{
+  "name": "listing-maps",
+  "private": true,
+  "license": "MIT",
+  "description": "Tests only. The extension itself has no build step; Chrome loads this folder as-is.",
+  "scripts": {
+    "test": "node --test tests/"
+  },
+  "devDependencies": {
+    "jsdom": "25.0.1"
+  }
+}

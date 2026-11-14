@@ -1,0 +1,24 @@
+/* Lets the map sit outside the card's right edge, above the site's right-hand column
+   (z-index 1 loses to realestate.com.au's) but below the sticky header (which 100+ would
+   cover on realestate.com.au, 1000+ on Domain).
+   The attribute name must match LISTING_CARD_HAS_MAP_ATTRIBUTE_NAME in add-listing-maps.js. */
+[data-listing-map-added] {
+  position: relative;
+  overflow: visible !important;
+  z-index: 2;
+}
+
+/* Places the map to the right of its listing card, matching the card's height. */
+.listing-map-embed {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 16px);
+  width: 360px;
+  height: 100%;
+  min-height: 240px;
+  border: 0;
+  border-radius: 8px;
+  /* Only orders the map within its card (the card's z-index above sets it against the page),
+     keeping it above anything else inside the card. */
+  z-index: 10;
+}

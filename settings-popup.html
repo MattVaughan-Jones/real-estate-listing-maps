@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="settings-popup.css" />
+  </head>
+  <body>
+    <h1>Listing map settings</h1>
+
+    <fieldset>
+      <legend>Map framing</legend>
+      <label><input type="radio" name="framingMode" value="followPin" /> Centre on each pin</label>
+      <label><input type="radio" name="framingMode" value="fixed" /> Same area for every map</label>
+    </fieldset>
+
+    <section id="follow-pin-settings">
+      <label>
+        Zoom level
+        <input id="follow-pin-zoom-level" type="number" step="1" />
+      </label>
+    </section>
+
+    <section id="fixed-centre-settings">
+      <label>
+        Centre point
+        <input id="fixed-centre" type="text" />
+      </label>
+      <label>
+        Zoom level
+        <input id="fixed-centre-zoom-level" type="number" step="1" />
+      </label>
+
+      <p class="hint">
+        Coordinates can be decimal (<code>-27.4476, 153.03</code>) or copied from Google Maps
+        (<code>27°21'51.4"S 153°01'18.5"E</code>).
+      </p>
+    </section>
+
+    <button id="save-button">Save</button>
+    <p id="save-status" role="status"></p>
+
+    <script src="map-settings.js"></script>
+    <script src="settings-popup.js"></script>
+  </body>
+</html>
