@@ -4,7 +4,7 @@ A Chrome extension that shows a small Google Map beside every listing when you s
 **realestate.com.au** or **domain.com.au**, so you can see where each property is while you
 scroll through the results.
 
-![A realestate.com.au listing with a Google Map beside it, pinned on the property's address](images/hero_image.png)
+![A realestate.com.au listing with a Google Map beside it, pinned on the property's address](images/hero_image.jpeg)
 
 ## Install
 
