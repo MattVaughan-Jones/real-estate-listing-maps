@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const { loadSettingsPopup, waitForPageToSettle } = require("./load-extension-into-page");
 
 const EXPECTED_DEFAULT_SETTINGS = {
+  areMapsShowing: true,
   framingMode: "followPin",
   followPinZoomLevel: 15,
   fixedCentre: { latitude: -27.4698, longitude: 153.0251 }, // Brisbane CBD
@@ -11,6 +12,7 @@ const EXPECTED_DEFAULT_SETTINGS = {
 };
 
 const VALID_SAVED_SETTINGS = {
+  areMapsShowing: true,
   framingMode: "fixed",
   followPinZoomLevel: 14,
   fixedCentre: { latitude: -27.5, longitude: 153.1 },
@@ -23,7 +25,7 @@ async function loadSettingsAsTheExtensionWould(savedSettings) {
   return { loadedSettings: JSON.parse(JSON.stringify(loadedSettings)), popup };
 }
 
-test("a new user gets centre-on-pin at zoom 15, with Brisbane CBD at zoom 12 for a fixed centre", async () => {
+test("a new user gets maps switched on, centred on the pin at zoom 15, with Brisbane CBD at zoom 12 for a fixed centre", async () => {
   const { loadedSettings } = await loadSettingsAsTheExtensionWould({});
   assert.deepEqual(loadedSettings, EXPECTED_DEFAULT_SETTINGS);
 });
@@ -31,6 +33,12 @@ test("a new user gets centre-on-pin at zoom 15, with Brisbane CBD at zoom 12 for
 test("valid saved settings are kept", async () => {
   const { loadedSettings } = await loadSettingsAsTheExtensionWould(VALID_SAVED_SETTINGS);
   assert.deepEqual(loadedSettings, VALID_SAVED_SETTINGS);
+});
+
+test("settings saved before the on/off switch existed are kept, with maps switched on", async () => {
+  const { areMapsShowing, ...settingsSavedBeforeTheSwitchExisted } = VALID_SAVED_SETTINGS;
+  const { loadedSettings } = await loadSettingsAsTheExtensionWould(settingsSavedBeforeTheSwitchExisted);
+  assert.deepEqual(loadedSettings, { ...settingsSavedBeforeTheSwitchExisted, areMapsShowing: true });
 });
 
 test("saved settings that don't match the current schema are reset to the defaults", async () => {
@@ -43,6 +51,7 @@ test("saved settings that don't match the current schema are reset to the defaul
     "a missing setting": { framingMode: "fixed", followPinZoomLevel: 14 },
     "an out-of-range zoom level": { ...VALID_SAVED_SETTINGS, followPinZoomLevel: 99 },
     "an unknown framing mode": { ...VALID_SAVED_SETTINGS, framingMode: "boundary" },
+    "an on/off switch that isn't true or false": { ...VALID_SAVED_SETTINGS, areMapsShowing: "off" },
   };
   for (const [description, savedSettings] of Object.entries(savedSettingsThatMustBeReset)) {
     const { loadedSettings, popup } = await loadSettingsAsTheExtensionWould(savedSettings);
@@ -86,6 +95,7 @@ test("an invalid field in the hidden mode is reset to its default instead of blo
   });
 
   assert.deepEqual(popup.readSavedSettings(), {
+    areMapsShowing: true,
     framingMode: "followPin",
     followPinZoomLevel: 16,
     fixedCentre: EXPECTED_DEFAULT_SETTINGS.fixedCentre,
@@ -104,4 +114,33 @@ test("an invalid field the user can see blocks the save and explains why", async
 
   assert.match(statusMessage, /isn't a valid coordinate/);
   assert.deepEqual(popup.readSavedSettings(), VALID_SAVED_SETTINGS, "nothing should have been saved");
+});
+
+async function flipMapsShowingSwitch(popup) {
+  await waitForPageToSettle(); // let the popup fill itself from saved settings first
+  const mapsShowingSwitch = popup.document.getElementById("maps-showing-switch");
+  mapsShowingSwitch.click(); // flips it and fires "change", as a real click would
+  await waitForPageToSettle();
+  return popup.document.getElementById("save-status").textContent;
+}
+
+test("the on/off switch saves straight away, keeping the saved framing but not unsaved edits", async () => {
+  const popup = loadSettingsPopup({ savedSettings: VALID_SAVED_SETTINGS });
+  await waitForPageToSettle();
+  popup.document.getElementById("fixed-centre-zoom-level").value = "20"; // edited but not saved
+
+  const statusMessage = await flipMapsShowingSwitch(popup);
+
+  assert.match(statusMessage, /Maps turned off/);
+  assert.deepEqual(popup.readSavedSettings(), { ...VALID_SAVED_SETTINGS, areMapsShowing: false });
+});
+
+test("a new user who switches maps off stays switched off", async () => {
+  // Saving the switch on its own would leave storage failing the schema check, and the next
+  // load would reset it to the defaults, switching maps back on.
+  const popup = loadSettingsPopup();
+  await flipMapsShowingSwitch(popup);
+
+  const { loadedSettings } = await loadSettingsAsTheExtensionWould(popup.readSavedSettings());
+  assert.deepEqual(loadedSettings, { ...EXPECTED_DEFAULT_SETTINGS, areMapsShowing: false });
 });

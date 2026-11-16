@@ -35,9 +35,15 @@ a pin on the property's address.
 
 ### Settings
 
-Click the **Listing Maps** icon in Chrome's toolbar to choose how the maps are framed:
+Click the **Listing Maps** icon in Chrome's toolbar to turn the maps on and off, or to choose
+how they're framed.
 
 <img src="images/settings_menu.png" alt="The Listing Maps settings popup" width="352">
+
+Use the **Show maps beside listings** switch to turn the maps on and off. It takes effect
+straight away, with no need to click Save.
+
+To choose how the maps are framed:
 
 - **Centre on each pin** (the default): each map is centred on its property. Set how far it's
   zoomed in (1 shows the whole world, 21 shows individual buildings; the default is 15).

@@ -1,5 +1,8 @@
-// The popup opened from the extension's toolbar icon. Shows only the settings that apply to
-// the chosen framing mode, and saves them for the listing pages to use.
+// The popup opened from the extension's toolbar icon. Has a switch to turn maps on and off,
+// shows only the settings that apply to the chosen framing mode, and saves them for the
+// listing pages to use.
+
+const mapsShowingSwitch = document.getElementById("maps-showing-switch");
 
 const followPinSettingsSection = document.getElementById("follow-pin-settings");
 const fixedCentreSettingsSection = document.getElementById("fixed-centre-settings");
@@ -87,6 +90,7 @@ function parseZoomLevelText(zoomLevelText) {
 }
 
 function fillFormFromSettings(mapSettings) {
+  mapsShowingSwitch.checked = mapSettings.areMapsShowing;
   selectFramingMode(mapSettings.framingMode);
   followPinZoomLevelInput.value = mapSettings.followPinZoomLevel;
   fixedCentreInput.value = formatCoordinateForDisplay(mapSettings.fixedCentre);
@@ -119,20 +123,36 @@ function readSettingsFromForm() {
     followPinZoomLevel ??= DEFAULT_MAP_SETTINGS.followPinZoomLevel;
   }
 
-  return { mapSettings: { framingMode, followPinZoomLevel, fixedCentre, fixedCentreZoomLevel } };
+  const areMapsShowing = mapsShowingSwitch.checked;
+  return {
+    mapSettings: { areMapsShowing, framingMode, followPinZoomLevel, fixedCentre, fixedCentreZoomLevel },
+  };
+}
+
+function showSaveStatus(statusMessage, { isError = false } = {}) {
+  saveStatusMessage.classList.toggle("error", isError);
+  saveStatusMessage.textContent = statusMessage;
+}
+
+// The switch takes effect straight away, like most on/off switches, without pressing Save.
+// It saves alongside the already-saved framing settings, not any unsaved edits in the form.
+async function saveMapsShowingSwitch() {
+  const savedMapSettings = await loadMapSettings();
+  const areMapsShowing = mapsShowingSwitch.checked;
+  await saveMapSettings({ ...savedMapSettings, areMapsShowing });
+  showSaveStatus(`Maps turned ${areMapsShowing ? "on" : "off"}. Open listing pages update automatically.`);
 }
 
 async function saveSettingsFromForm() {
   const { mapSettings, errorMessage } = readSettingsFromForm();
-  saveStatusMessage.classList.toggle("error", Boolean(errorMessage));
   if (errorMessage) {
-    saveStatusMessage.textContent = errorMessage;
+    showSaveStatus(errorMessage, { isError: true });
     return;
   }
   await saveMapSettings(mapSettings);
   // Re-fill the form so a pasted degrees-minutes-seconds centre is shown in decimal form.
   fillFormFromSettings(mapSettings);
-  saveStatusMessage.textContent = "Saved. Open listing pages update automatically.";
+  showSaveStatus("Saved. Open listing pages update automatically.");
 }
 
 // The zoom limits live in map-settings.js; apply them to both zoom fields' spinners.
@@ -143,5 +163,6 @@ for (const zoomLevelInput of [followPinZoomLevelInput, fixedCentreZoomLevelInput
 document.querySelectorAll(FRAMING_MODE_RADIO_SELECTOR).forEach((framingModeRadio) => {
   framingModeRadio.addEventListener("change", showSettingsForSelectedFramingMode);
 });
+mapsShowingSwitch.addEventListener("change", saveMapsShowingSwitch);
 saveButton.addEventListener("click", saveSettingsFromForm);
 loadMapSettings().then(fillFormFromSettings);

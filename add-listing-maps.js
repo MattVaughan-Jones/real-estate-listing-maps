@@ -49,7 +49,7 @@ function removeMapFromListingCard(listingCard) {
 
 // Removes maps from elements that are no longer listing cards with a readable address, e.g.
 // a reused element the site has turned into an ad, or every card once the user leaves the
-// search results list.
+// search results list or switches maps off.
 function removeMapsExceptFrom(listingCardsThatKeepTheirMap) {
   for (const elementWithMap of document.querySelectorAll(`[${LISTING_CARD_HAS_MAP_ATTRIBUTE_NAME}]`)) {
     if (!listingCardsThatKeepTheirMap.has(elementWithMap)) {
@@ -77,8 +77,11 @@ function warnOnceIfNoAddressesCouldBeRead(listingCardCount, readableAddressCount
 function syncMapsWithListingsAndSettings() {
   if (!loadedMapSettingsOrNull) return; // settings not loaded yet
 
-  // Maps appear only in a search results list, never on other pages or in a site's map view.
-  if (!adapterForThisSite.isSearchResultsListShowing()) {
+  // Maps appear only when switched on in the settings, and only in a search results list:
+  // never on other pages or in a site's map view.
+  const shouldShowMapsOnThisPage =
+    loadedMapSettingsOrNull.areMapsShowing && adapterForThisSite.isSearchResultsListShowing();
+  if (!shouldShowMapsOnThisPage) {
     removeMapsExceptFrom(new Set());
     return;
   }
