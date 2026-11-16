@@ -11,7 +11,7 @@ scroll through the results.
 The extension isn't on the Chrome Web Store, so you load it into Chrome yourself. It takes
 about a minute.
 
-1. **Download it.** On this page, click **Code → Download ZIP** and unzip it.
+1. **Download it** by clicking **Code → Download ZIP** at the top of this page, and unzip the downloaded file.
 
    ![The repository's GitHub page, with the green Code button outlined in red](images/download_zip_code_button.png)
 
@@ -21,9 +21,12 @@ about a minute.
    git clone https://github.com/MattVaughan-Jones/real-estate-listing-maps.git
    ```
 
-2. **Open Chrome's extensions page.** Go to `chrome://extensions` in the address bar.
+2. **Open Chrome's extensions page** by going to `chrome://extensions` in the address bar.
 3. **Turn on Developer mode** with the switch in the top-right corner.
-4. **Click Load unpacked** and choose the folder you downloaded.
+4. Click **Load unpacked** and choose the folder you unzipped.
+
+   ![Google Chrome extensions page with relevant buttons outlined in red](images/configure-chrome-extension-screenshot.png)
+
 5. **Pin it (optional).** Click the puzzle-piece icon in Chrome's toolbar and pin
    **Listing Maps**, so its settings are one click away.
 
@@ -58,7 +61,7 @@ Click **Save**. Any open search pages update straight away.
 ### Updating
 
 Download the latest version (or run `git pull`), then click the reload icon on
-**Listing Maps** at `chrome://extensions`.
+**Listing Maps** at `chrome://extensions`, as highlighted in the screenshot in the **Install** section.
 
 ### If maps stop appearing
 
