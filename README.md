@@ -11,7 +11,11 @@ scroll through the results.
 The extension isn't on the Chrome Web Store, so you load it into Chrome yourself. It takes
 about a minute.
 
-1. **Download it.** On this page, click **Code → Download ZIP** and unzip it. Or, if you use git:
+1. **Download it.** On this page, click **Code → Download ZIP** and unzip it.
+
+   ![The repository's GitHub page, with the green Code button outlined in red](images/download_zip_code_button.png)
+
+   Or, if you use git:
 
    ```bash
    git clone https://github.com/MattVaughan-Jones/real-estate-listing-maps.git
