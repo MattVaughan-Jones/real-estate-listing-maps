@@ -1,4 +1,5 @@
-// Map framing settings, shared by the settings popup and the listing page script.
+// Map settings (whether maps show at all, and how they're framed), shared by the settings
+// popup and the listing page script.
 // Saved in chrome.storage.sync so they persist and open listing pages can react to changes.
 
 const MAP_FRAMING_MODES = {
@@ -11,8 +12,10 @@ const MINIMUM_ZOOM_LEVEL = 1;
 const MAXIMUM_ZOOM_LEVEL = 21;
 
 // Used until the user saves their own settings. Its keys are also the settings schema:
-// saved settings with any other set of keys are discarded (see loadMapSettings).
+// saved settings with any other set of keys are discarded, except that a missing on/off switch
+// counts as on (see loadMapSettings).
 const DEFAULT_MAP_SETTINGS = {
+  areMapsShowing: true, // the popup's on/off switch
   framingMode: MAP_FRAMING_MODES.followPin,
   followPinZoomLevel: 15,
   fixedCentre: { latitude: -27.4698, longitude: 153.0251 }, // Brisbane CBD
@@ -46,6 +49,7 @@ function doSavedSettingsMatchSchema(savedSettings) {
   const hasExactlySchemaKeys = savedKeys.join(",") === schemaKeys.join(",");
   return (
     hasExactlySchemaKeys &&
+    typeof savedSettings.areMapsShowing === "boolean" &&
     Object.values(MAP_FRAMING_MODES).includes(savedSettings.framingMode) &&
     isValidZoomLevel(savedSettings.followPinZoomLevel) &&
     isValidGeographicPoint(savedSettings.fixedCentre) &&
@@ -56,9 +60,13 @@ function doSavedSettingsMatchSchema(savedSettings) {
 // Returns the saved settings, or the defaults if nothing has been saved yet. Saved settings
 // that don't match the schema are erased and replaced with the defaults.
 async function loadMapSettings() {
-  const savedSettings = await chrome.storage.sync.get(null); // null reads every saved key
-  const hasSavedSettings = Object.keys(savedSettings).length > 0;
+  const storedSettings = await chrome.storage.sync.get(null); // null reads every saved key
+  const hasSavedSettings = Object.keys(storedSettings).length > 0;
   if (!hasSavedSettings) return DEFAULT_MAP_SETTINGS;
+
+  // Settings saved before the on/off switch existed don't have it. Treat those as on, rather
+  // than failing the schema check and losing the user's framing settings.
+  const savedSettings = { areMapsShowing: DEFAULT_MAP_SETTINGS.areMapsShowing, ...storedSettings };
   if (doSavedSettingsMatchSchema(savedSettings)) return savedSettings;
 
   await chrome.storage.sync.clear();

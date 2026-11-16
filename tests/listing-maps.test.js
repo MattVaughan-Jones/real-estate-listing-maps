@@ -178,3 +178,23 @@ test("maps appear only in search results, not on property pages or Domain's map 
   await waitForPageToSettle();
   assert.equal(searchPageWithOtherCards.document.querySelectorAll(".listing-map-embed").length, 0);
 });
+
+test("switching maps off removes them from open pages, and switching them on brings them back", async () => {
+  const page = loadListingPage({
+    pageUrl: REALESTATE_SEARCH_URL,
+    pageHtml: realestateResultsHtml(["21 Baker Street, Richmond"]),
+  });
+  await waitForPageToSettle();
+  const listingCard = page.document.querySelector("article");
+  const setMapsShowing = async (areMapsShowing) => {
+    // As the popup does: saves the switch alongside the other (here, default) settings.
+    await page.runInPage(`saveMapSettings({ ...DEFAULT_MAP_SETTINGS, areMapsShowing: ${areMapsShowing} })`);
+    await waitForPageToSettle();
+  };
+
+  await setMapsShowing(false);
+  assert.equal(listingMapIn(listingCard), null);
+
+  await setMapsShowing(true);
+  assert.equal(pinnedAddressOf(listingCard), "21 Baker Street, Richmond");
+});
